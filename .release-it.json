@@ -4,5 +4,9 @@
       "preset": "conventionalcommits",
       "infile": "CHANGELOG.md"
     }
+  },
+  "hooks": {
+    "before:init": ["npm run typecheck", "npm test"],
+    "after:bump": "npm run build"
   }
 }
