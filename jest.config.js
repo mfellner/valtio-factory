@@ -4,6 +4,11 @@ module.exports = {
       displayName: 'test',
       preset: 'ts-jest',
       coveragePathIgnorePatterns: ['/node_modules/', '/example/'],
+      coverageThreshold: {
+        global: {
+          lines: 90,
+        },
+      },
     },
     {
       displayName: 'lint',

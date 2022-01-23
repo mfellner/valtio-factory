@@ -17,5 +17,12 @@ jobs:
           cache: yarn
       - run: yarn install --frozen-lockfile --check-files
       - run: yarn build
-      - name: Test Default
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Test
         run: yarn test --ci --coverage --runInBand
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
