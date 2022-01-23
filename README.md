@@ -7,6 +7,7 @@
 [![Downloads](https://img.shields.io/npm/dt/@mfellner/valtio-factory.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@mfellner/valtio-factory)
 
 - [Create valtio state using the factory pattern](#create-valtio-state-using-the-factory-pattern)
+  - [Motivation](#motivation)
 - [Define actions](#define-actions)
   - [Use context](#use-context)
 - [Derive properties](#derive-properties)
@@ -19,11 +20,12 @@
   - [Get the result type of a factory](#get-the-result-type-of-a-factory)
   - [Declare a state type](#declare-a-state-type)
 - [Use with React](#use-with-react)
+- [Example](#example)
 
 ### Create valtio state using the factory pattern
 
 A proxy object is created from initial state.
-Existing valtio functions can be used normally.
+Existing [valtio](https://github.com/pmndrs/valtio) functions can be used normally.
 
 ```ts
 import { createFactory } from '@mfellner/valtio-factory';
@@ -35,6 +37,20 @@ state.increment();
 
 subscribe(state, () => console.log('state:', state));
 ```
+
+#### Motivation
+
+Valtio already offers [several simple recipes](https://github.com/pmndrs/valtio#recipes) for organizing actions, persisting state, and composing states.
+
+This library provides a comprehensive and opinionated solution on top valtio for creating "stores" (state + actions) using the factory pattern. Specifically, it simplifies the following things:
+
+- Separation of state declaration and initialization
+- Initializing state from external data sources (e.g. local storage, async storage)
+- Declaring actions and binding them to state
+- Declaring state subscriptions
+- Injecting dependencies into actions and other state-dependent logic with context
+
+valtio-factory was partially inspired by [MobX-State-Tree](https://mobx-state-tree.js.org/intro/welcome).
 
 ### Define actions
 
@@ -261,3 +277,7 @@ function Counter() {
   );
 }
 ```
+
+### Example
+
+You can find an example with React and valtio-factory in this repository at [example/](example/README.md) or on [Codesandbox](https://codesandbox.io/s/valtio-factory-example-j7v2s).
