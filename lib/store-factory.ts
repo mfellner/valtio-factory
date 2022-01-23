@@ -257,7 +257,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S, C>, U extends 
 
       const mergedState = { ...baseState, ...initialState };
 
-      const $getParent = () => derivedProxy;
+      const $getParent = ref(() => derivedProxy);
 
       // Resolve any state properties that are actually other factories.
       for (const [key, value] of Object.entries(baseState)) {
