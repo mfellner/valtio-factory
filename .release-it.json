@@ -5,6 +5,12 @@
       "infile": "CHANGELOG.md"
     }
   },
+  "git": {
+    "commitMessage": "chore: release ${version}"
+  },
+  "github": {
+    "release": true
+  },
   "hooks": {
     "before:init": ["npm run typecheck", "npm test"],
     "after:bump": "npm run build"
