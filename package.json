@@ -3,6 +3,7 @@
   "version": "1.0.0-alpha.2",
   "description": "Create and compose valtio state using the factory pattern.",
   "author": "Maximilian Fellner <mail@mfellner.eu>",
+  "repository": "https://github.com/mfellner/valtio-factory",
   "license": "MIT",
   "source": "lib/index.ts",
   "main": "dist/main.js",
