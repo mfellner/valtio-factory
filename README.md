@@ -1,4 +1,4 @@
-# valtio-factory <!-- omit in toc -->
+# valtio-factory 🏭 <!-- omit in toc -->
 
 [![Build Status](https://img.shields.io/github/workflow/status/mfellner/valtio-factory/test?style=flat&colorA=000000&colorB=000000)](https://github.com/mfellner/valtio-factory/actions?query=workflow%3Atest)
 [![Codecov](https://img.shields.io/codecov/c/github/mfellner/valtio-factory?colorA=000000&colorB=000000)](https://app.codecov.io/gh/mfellner/valtio-factory)
