@@ -48,7 +48,7 @@ This library provides a comprehensive and opinionated solution on top valtio for
 - Separation of store declaration and initialization
 - Initializing stores from external data sources (e.g. local storage, async storage)
 - Declaring actions and binding them to state
-- Declaring state subscriptions
+- Declaring derived state and subscriptions
 - Injecting dependencies into actions and other state-dependent logic with [context](#use-context)
 - Composing multiple stores
 
