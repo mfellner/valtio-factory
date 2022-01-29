@@ -1,10 +1,9 @@
 import { proxy, ref, snapshot, subscribe } from 'valtio';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { derive } from 'valtio/utils';
-import { DeepResolveType } from 'valtio/vanilla';
 import { Actions, composeActions } from './compose-actions';
 import { combineDerivedProps, createDerived, DerivedProps } from './create-derived';
-import { ParametersAfterSecond, WithContext } from './types';
+import { ParametersAfterSecond, Snapshot, WithContext } from './types';
 
 type AdditionalSubscribeArgs = ParametersAfterSecond<typeof subscribe>;
 
@@ -118,7 +117,7 @@ export interface Factory<S extends {}, C extends {}, A extends Actions<S, C>, U 
    * @see https://github.com/pmndrs/valtio#use-it-vanilla
    */
   subscribeSnapshot(
-    subscription: SubscriptionFn<DeepResolveType<S>>,
+    subscription: SubscriptionFn<Snapshot<S>>,
     ...args: AdditionalSubscribeArgs
   ): Factory<S, C, A, U>;
 
@@ -216,7 +215,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S, C>, U extends 
     },
 
     subscribeSnapshot: (
-      subscription: SubscriptionFn<DeepResolveType<S>>,
+      subscription: SubscriptionFn<Snapshot<S>>,
       ...args: AdditionalSubscribeArgs
     ) => {
       return factory<S, C, A, U>({
