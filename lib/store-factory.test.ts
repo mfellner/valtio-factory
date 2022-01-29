@@ -63,7 +63,7 @@ describe('store-factory', () => {
       })
       .actions({
         double() {
-          state.count = state.doubled;
+          this.count = this.doubled;
         },
       })
       .create();
@@ -76,7 +76,7 @@ describe('store-factory', () => {
     const state = createFactory<{ count: number }, { n: number }>({ count: 0 })
       .actions({
         increment() {
-          state.count += this.$context.n;
+          this.count += this.$context.n;
         },
       })
       .create({ n: 42 });

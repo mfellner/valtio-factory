@@ -33,13 +33,13 @@ export function createFactory<State extends {}, Context = void>(
   });
 }
 
-type FactoryResult<S extends {}, C extends {}, A extends Actions<S, C>, U extends {}> = {
+type FactoryResult<S extends {}, C extends {}, A extends Actions<S & U, C>, U extends {}> = {
   [key in keyof S]: ResultFromFactory<S[key]>;
 } & A &
   U &
   WithContext<C>;
 
-type OnCreateFn<S extends {}, C extends {}, A extends Actions<S, C>, U extends {}> = (
+type OnCreateFn<S extends {}, C extends {}, A extends Actions<S & U, C>, U extends {}> = (
   state: FactoryResult<S, C, A, U>,
 ) => void;
 
@@ -49,7 +49,7 @@ function isFactory(obj: any): obj is Factory<any, any, any, any> {
   return obj instanceof Object && obj[isFactoryProp] === true;
 }
 
-export interface Factory<S extends {}, C extends {}, A extends Actions<S, C>, U extends {}> {
+export interface Factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U extends {}> {
   [isFactoryProp]: true;
   /**
    * Declare action handlers on the proxy state object.
@@ -65,7 +65,7 @@ export interface Factory<S extends {}, C extends {}, A extends Actions<S, C>, U 
    *  });
    * ```
    */
-  actions<A2 extends Actions<S, C>>(actions2: A2): Factory<S, C, A & A2, U>;
+  actions<A2 extends Actions<S & U, C>>(actions2: A2): Factory<S, C, A & A2, U>;
 
   /**
    * Declare derived properties with the {@link derive} utility.
@@ -168,7 +168,7 @@ type ResultFromFactory<T> = T extends Factory<any, any, any, any> ? ReturnType<T
  */
 export type Store<T extends Factory<any, any, any, any>> = ResultFromFactory<T>;
 
-function factory<S extends {}, C extends {}, A extends Actions<S, C>, U extends {}>({
+function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U extends {}>({
   baseState,
   baseActions,
   baseDerivedProps,
@@ -184,10 +184,10 @@ function factory<S extends {}, C extends {}, A extends Actions<S, C>, U extends 
   return {
     [isFactoryProp]: true,
 
-    actions: <A2 extends Actions<S, C>>(actions: A2) => {
+    actions: <A2 extends Actions<S & U, C>>(actions: A2) => {
       return factory<S, C, A & A2, U>({
         baseState,
-        baseActions: composeActions<S, C, A, A2>(baseActions, actions),
+        baseActions: composeActions<S & U, C, A, A2>(baseActions, actions),
         baseDerivedProps,
         baseSubscriptions,
         onCreate,
