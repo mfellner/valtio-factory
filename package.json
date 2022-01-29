@@ -4,6 +4,14 @@
   "description": "Create and compose valtio state using the factory pattern.",
   "author": "Maximilian Fellner <mail@mfellner.eu>",
   "repository": "https://github.com/mfellner/valtio-factory",
+  "keywords": [
+    "valtio",
+    "factory",
+    "react",
+    "state",
+    "proxy",
+    "store"
+  ],
   "license": "MIT",
   "source": "lib/index.ts",
   "main": "dist/main.js",
