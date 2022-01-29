@@ -1,3 +1,10 @@
+## [1.0.0-alpha.3](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.2...1.0.0-alpha.3) (2022-01-29)
+
+
+### Bug Fixes
+
+* actions can use derived state ([083f28b](https://github.com/mfellner/valtio-factory/commit/083f28bce27ccc8af507dbf366523868d3711a1b))
+
 ## [1.0.0-alpha.2](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.1...1.0.0-alpha.2) (2022-01-29)
 
 
