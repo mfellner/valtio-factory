@@ -13,6 +13,7 @@
 - [Derive properties](#derive-properties)
 - [Provide initial state on initialization](#provide-initial-state-on-initialization)
 - [Subscribe](#subscribe)
+  - [Subscribe to snapshots](#subscribe-to-snapshots)
   - [Use `onCreate` to subscribe only to portions of the state](#use-oncreate-to-subscribe-only-to-portions-of-the-state)
 - [Compose factories](#compose-factories)
   - [Access the parent store](#access-the-parent-store)
@@ -44,11 +45,12 @@ Valtio already offers [several simple recipes](https://github.com/pmndrs/valtio#
 
 This library provides a comprehensive and opinionated solution on top valtio for creating "stores" (state + actions) using the factory pattern. Specifically, it simplifies the following things:
 
-- Separation of state declaration and initialization
-- Initializing state from external data sources (e.g. local storage, async storage)
+- Separation of store declaration and initialization
+- Initializing stores from external data sources (e.g. local storage, async storage)
 - Declaring actions and binding them to state
 - Declaring state subscriptions
-- Injecting dependencies into actions and other state-dependent logic with context
+- Injecting dependencies into actions and other state-dependent logic with [context](#use-context)
+- Composing multiple stores
 
 valtio-factory was partially inspired by [MobX-State-Tree](https://mobx-state-tree.js.org/intro/welcome).
 
@@ -134,11 +136,21 @@ const state = createFactory({ count: 0 })
   .create();
 ```
 
+#### Subscribe to snapshots
+
+To conveniently subscribe to a snapshot of the state, use `subscribeSnapshot`.
+
+```ts
+createFactory({ count: 0 }).subscribeSnapshot((snap) => {
+  // `snap` is an immutable object
+});
+```
+
 #### Use `onCreate` to subscribe only to portions of the state
 
 You can use the `onCreate` method to declare a callback that will receive the proxy state object when it is created by the factory.
 
-That way you can use valtio's `subscribe` and `subscribeKey` as you normally would.
+That way you can use all of valtio's utilities like `subscribe` and `subscribeKey` as you normally would.
 
 ```ts
 import { subscribeKey } from 'valtio/utils';
@@ -186,6 +198,9 @@ state.foo.inc();
 #### Access the parent store
 
 When composing factories and their resultant state, the parent store can be accessed with the `$getParent()` method inside actions.
+
+Note that it's currently not possible to anticpate the type of the parent store and wether it will be defined.
+Hence it's necessary to supply a type parameter to the $getParent function and to use optional chaining.
 
 ```ts
 import { createFactory, Store } from '@mfellner/valtio-factory';
