@@ -124,6 +124,30 @@ describe('store-factory', () => {
     expect(count).toBe(1);
   });
 
+  test('subscribe and subscribeSnapshot should receive context', () => {
+    type State = { count: number };
+
+    const context = { fn: jest.fn() };
+    type Context = typeof context;
+
+    const state = createFactory<State, Context>({ count: 0 })
+      .actions({
+        increment() {
+          this.count += 1;
+        },
+      })
+      .subscribe((_, context) => {
+        context.fn();
+      }, /* notifyInSync */ true)
+      .subscribeSnapshot((_, context) => {
+        context.fn();
+      }, /* notifyInSync */ true)
+      .create(context);
+
+    state.increment();
+    expect(context.fn).toHaveBeenCalledTimes(2);
+  });
+
   test('onCreate', () => {
     let count = 0;
 

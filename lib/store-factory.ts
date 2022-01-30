@@ -7,12 +7,18 @@ import { ParametersAfterSecond, Snapshot, UnsubscribeFn, WithContext } from './t
 
 type AdditionalSubscribeArgs = ParametersAfterSecond<typeof subscribe>;
 
-type SubscriptionFn<S extends {}> = (
-  state: S,
+/**
+ * Subscription callback function that will receive the state (or snapshot) as a
+ * first argument, the context as a second argument, and the rest of the arguments
+ * of valtio's {@link subscribe} function.
+ */
+type SubscriptionFn<State extends {}, Context> = (
+  state: State,
+  context: Context,
   ...args: Parameters<Parameters<typeof subscribe>[1]>
 ) => void;
 
-type Subscription<S extends {}> = [SubscriptionFn<S>, ...AdditionalSubscribeArgs];
+type Subscription<S extends {}, Context> = [SubscriptionFn<S, Context>, ...AdditionalSubscribeArgs];
 
 /**
  * Create a new store factory.
@@ -93,7 +99,7 @@ export interface Factory<S extends {}, C extends {}, A extends Actions<S & U, C>
 
   /**
    * Subscribe to the full state object.
-   * @param subscription Function that will receive the current state.
+   * @param subscription Function ({@link SubscriptionFn}) that will receive the current state.
    * @param args Additinal arguments of the {@link subscribe} function.
    * @returns The store factory.
    * @example
@@ -105,7 +111,10 @@ export interface Factory<S extends {}, C extends {}, A extends Actions<S & U, C>
    * ```
    * @see https://github.com/pmndrs/valtio#subscribe-from-anywhere
    */
-  subscribe(subscription: SubscriptionFn<S>, ...args: AdditionalSubscribeArgs): Factory<S, C, A, U>;
+  subscribe(
+    subscription: SubscriptionFn<S, C>,
+    ...args: AdditionalSubscribeArgs
+  ): Factory<S, C, A, U>;
 
   /**
    * Subscribe to a snaphshot of the full state object.
@@ -124,7 +133,7 @@ export interface Factory<S extends {}, C extends {}, A extends Actions<S & U, C>
    * @see https://github.com/pmndrs/valtio#use-it-vanilla
    */
   subscribeSnapshot(
-    subscription: SubscriptionFn<Snapshot<S>>,
+    subscription: SubscriptionFn<Snapshot<S>, C>,
     ...args: AdditionalSubscribeArgs
   ): Factory<S, C, A, U>;
 
@@ -188,7 +197,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
   baseState: S;
   baseActions: A;
   baseDerivedProps: DerivedProps<S, U>;
-  baseSubscriptions: Subscription<S>[];
+  baseSubscriptions: Subscription<S, C>[];
   unsubscriptions: Array<() => void>;
   onCreate: OnCreateFn<S, C, A, U>;
 }): Factory<S, C, A, U> {
@@ -217,7 +226,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
       });
     },
 
-    subscribe: (subscription: SubscriptionFn<S>, ...args: AdditionalSubscribeArgs) => {
+    subscribe: (subscription: SubscriptionFn<S, C>, ...args: AdditionalSubscribeArgs) => {
       return factory<S, C, A, U>({
         baseState,
         baseActions,
@@ -229,7 +238,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
     },
 
     subscribeSnapshot: (
-      subscription: SubscriptionFn<Snapshot<S>>,
+      subscription: SubscriptionFn<Snapshot<S>, C>,
       ...args: AdditionalSubscribeArgs
     ) => {
       return factory<S, C, A, U>({
@@ -303,7 +312,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         const unsubscription = subscribe(
           derivedProxy,
           (ops) => {
-            subscribtion(derivedProxy, ops);
+            subscribtion(derivedProxy, context, ops);
           },
           ...args,
         );

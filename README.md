@@ -129,9 +129,12 @@ const state = createFactory({ count: 0, bool: true }).create(/* context */ undef
 
 It's possible to define [subscriptions](https://github.com/pmndrs/valtio/blob/main/readme.md#subscribe-from-anywhere) on the whole state using the factory pattern.
 
+The subscription callback function receives the state object as a first argument, then the
+factory's context, and the rest of valtio's arguments for the subscribe callback last.
+
 ```ts
 const state = createFactory({ count: 0 })
-  .subscribe((state) => {
+  .subscribe((state, context) => {
     console.log('current state:', state);
   })
   .create();
@@ -142,7 +145,7 @@ const state = createFactory({ count: 0 })
 To conveniently subscribe to a snapshot of the state, use `subscribeSnapshot`.
 
 ```ts
-createFactory({ count: 0 }).subscribeSnapshot((snap) => {
+createFactory({ count: 0 }).subscribeSnapshot((snap, context) => {
   // `snap` is an immutable object
 });
 ```
@@ -315,4 +318,4 @@ function Counter() {
 
 ### Example
 
-You can find an example with React and valtio-factory in this repository at [example/](example/README.md) or on [Codesandbox](https://codesandbox.io/s/valtio-factory-example-j7v2s).
+You can find an example with React and valtio-factory in this repository at [example/](example/) or on [Codesandbox](https://codesandbox.io/s/valtio-factory-example-j7v2s).
