@@ -1,3 +1,10 @@
+## [1.0.0-alpha.4](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.3...1.0.0-alpha.4) (2022-01-30)
+
+
+### Features
+
+* add ability to unsubscribe ([4d754ac](https://github.com/mfellner/valtio-factory/commit/4d754aca667527f49a4d8589204f5653a8c622cb))
+
 ## [1.0.0-alpha.3](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.2...1.0.0-alpha.3) (2022-01-29)
 
 
