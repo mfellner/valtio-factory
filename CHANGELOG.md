@@ -1,3 +1,10 @@
+## [1.0.0-alpha.5](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.4...1.0.0-alpha.5) (2022-01-30)
+
+
+### Features
+
+* pass context to subscriptions ([67cace9](https://github.com/mfellner/valtio-factory/commit/67cace9346de4217dce9f94db468fad6478b8c5f))
+
 ## [1.0.0-alpha.4](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.3...1.0.0-alpha.4) (2022-01-30)
 
 
