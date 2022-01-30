@@ -149,6 +149,47 @@ describe('store-factory', () => {
     expect(count).toBe(1);
   });
 
+  test('$unsubscribe unsubscribes all subscriptions', () => {
+    let count1 = 0;
+    let count2 = 0;
+    let count3 = 0;
+
+    const state = createFactory({ count: 0 })
+      .actions({
+        increment() {
+          this.count += 1;
+        },
+      })
+      .subscribe((snap) => {
+        count1 = snap.count;
+      }, /* notifyInSync */ true)
+      .subscribeSnapshot((snap) => {
+        count2 = snap.count;
+      }, /* notifyInSync */ true)
+      .onCreate((state) => {
+        return subscribeKey(
+          state,
+          'count',
+          (n) => {
+            count3 = n;
+          },
+          true,
+        );
+      })
+      .create();
+
+    state.increment();
+    expect(count1).toBe(1);
+    expect(count2).toBe(1);
+    expect(count3).toBe(1);
+
+    state.$unsubscribe();
+    state.increment();
+    expect(count1).toBe(1);
+    expect(count2).toBe(1);
+    expect(count3).toBe(1);
+  });
+
   test('compose factories', () => {
     const context = {
       fizz: true,

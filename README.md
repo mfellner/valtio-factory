@@ -15,6 +15,7 @@
 - [Subscribe](#subscribe)
   - [Subscribe to snapshots](#subscribe-to-snapshots)
   - [Use `onCreate` to subscribe only to portions of the state](#use-oncreate-to-subscribe-only-to-portions-of-the-state)
+  - [Unsubscribe](#unsubscribe)
 - [Compose factories](#compose-factories)
   - [Access the parent store](#access-the-parent-store)
 - [TypeScript](#typescript)
@@ -152,14 +153,33 @@ You can use the `onCreate` method to declare a callback that will receive the pr
 
 That way you can use all of valtio's utilities like `subscribe` and `subscribeKey` as you normally would.
 
+`onCreate` may optionally return an _unsubscribe_ callback function.
+
 ```ts
 import { subscribeKey } from 'valtio/utils';
 
 createFactory({ count: 0 }).onCreate((state) => {
-  subscribeKey(state, 'count', (n) => {
+  return subscribeKey(state, 'count', (n) => {
     console.log('current count:', n);
   });
 });
+```
+
+#### Unsubscribe
+
+The store exposes the function `$unsubscribe()` which will unsubscribe all subscriptions added to the factory.
+It wil also call the unsubscribe callback returned by the `onCreate` function.
+
+```ts
+const state = createFactory({ count: 0 })
+  .subscribe((state) => {})
+  .onCreate((state) => {
+    // The function returned by onCreate will be called when $unsubscribe() is called.
+    return subscribeKey(state, 'count', (n) => {});
+  })
+  .create();
+
+state.$unsubscribe();
 ```
 
 ### Compose factories

@@ -7,7 +7,7 @@ test('composeActions', () => {
   const context = {
     b: true,
   };
-  const that = { ...state, $context: context };
+  const that = { ...state, $context: context, $unsubscribe: () => undefined };
 
   const a1: Actions<typeof state, typeof context> = {
     increment() {

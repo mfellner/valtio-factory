@@ -1,10 +1,18 @@
 import { snapshot } from 'valtio';
 
+export type UnsubscribeFn = () => void;
+
 export type WithContext<Context> = Readonly<{
   /**
    * Transitive context object.
    */
   $context: Context;
+  /**
+   * Unsubscribe _all_ subscriptions added to the factory and call the unsubscribe
+   * function that was returned by onCreate.
+   * This does not include any manual subscriptions on the proxy state itself.
+   */
+  $unsubscribe: UnsubscribeFn;
   /**
    * Returns the parent store if the factory was nested into a parent factory.
    * @template Parent type of the parent store.

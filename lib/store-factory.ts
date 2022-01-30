@@ -3,7 +3,7 @@ import { proxy, ref, snapshot, subscribe } from 'valtio';
 import type { derive } from 'valtio/utils';
 import { Actions, composeActions } from './compose-actions';
 import { combineDerivedProps, createDerived, DerivedProps } from './create-derived';
-import { ParametersAfterSecond, Snapshot, WithContext } from './types';
+import { ParametersAfterSecond, Snapshot, UnsubscribeFn, WithContext } from './types';
 
 type AdditionalSubscribeArgs = ParametersAfterSecond<typeof subscribe>;
 
@@ -29,6 +29,7 @@ export function createFactory<State extends {}, Context = void>(
     baseActions: {},
     baseDerivedProps: {},
     baseSubscriptions: [],
+    unsubscriptions: [],
     onCreate: () => undefined,
   });
 }
@@ -39,9 +40,15 @@ type FactoryResult<S extends {}, C extends {}, A extends Actions<S & U, C>, U ex
   U &
   WithContext<C>;
 
+/**
+ * Callback that is passed to the onCreate method of the factory. It receives the
+ * raw proxy state object.
+ * The function optionally returns an unsubcribe function that will be called when
+ * `state.$unsubscribe()` is called.
+ */
 type OnCreateFn<S extends {}, C extends {}, A extends Actions<S & U, C>, U extends {}> = (
   state: FactoryResult<S, C, A, U>,
-) => void;
+) => UnsubscribeFn | void;
 
 const isFactoryProp = Symbol('isFactory');
 
@@ -123,7 +130,9 @@ export interface Factory<S extends {}, C extends {}, A extends Actions<S & U, C>
 
   /**
    * Add a callback for when the `create` method of the factory is called.
-   * @param fn Function that will be called with the proxy state object.
+   * @param fn Function ({@link OnCreateFn}) that will be called with the proxy state object.
+   * This function may return an _unsubscribe_ callback that will be called
+   * when the `$unsubscribe()` function on the store is called.
    * @returns The store factory.
    * @example
    * ```ts
@@ -173,12 +182,14 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
   baseActions,
   baseDerivedProps,
   baseSubscriptions,
+  unsubscriptions,
   onCreate,
 }: {
   baseState: S;
   baseActions: A;
   baseDerivedProps: DerivedProps<S, U>;
   baseSubscriptions: Subscription<S>[];
+  unsubscriptions: Array<() => void>;
   onCreate: OnCreateFn<S, C, A, U>;
 }): Factory<S, C, A, U> {
   return {
@@ -190,6 +201,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         baseActions: composeActions<S & U, C, A, A2>(baseActions, actions),
         baseDerivedProps,
         baseSubscriptions,
+        unsubscriptions,
         onCreate,
       });
     },
@@ -200,6 +212,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         baseActions,
         baseDerivedProps: combineDerivedProps(baseDerivedProps, derivedProps),
         baseSubscriptions,
+        unsubscriptions,
         onCreate,
       });
     },
@@ -210,6 +223,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         baseActions,
         baseDerivedProps,
         baseSubscriptions: [...baseSubscriptions, [subscription, ...args]],
+        unsubscriptions,
         onCreate,
       });
     },
@@ -226,6 +240,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
           ...baseSubscriptions,
           [(state, ...restArgs) => subscription(snapshot(state), ...restArgs), ...args],
         ],
+        unsubscriptions,
         onCreate,
       });
     },
@@ -236,6 +251,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         baseActions,
         baseDerivedProps,
         baseSubscriptions,
+        unsubscriptions,
         onCreate: fn,
       });
     },
@@ -268,25 +284,39 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         }
       }
 
+      const $unsubscribe = () => {
+        for (const unsub of unsubscriptions) {
+          unsub();
+        }
+      };
+
       const stateProxy: S & A & WithContext<C> = proxy({
         ...mergedState,
         ...baseActions,
         $context: ref(context || ({} as C)),
+        $unsubscribe,
       });
 
       const derivedProxy: S & A & U & WithContext<C> = createDerived(stateProxy, baseDerivedProps);
 
       for (const [subscribtion, ...args] of baseSubscriptions) {
-        subscribe(
+        const unsubscription = subscribe(
           derivedProxy,
           (ops) => {
             subscribtion(derivedProxy, ops);
           },
           ...args,
         );
+        unsubscriptions.push(unsubscription);
       }
 
-      onCreate(derivedProxy as FactoryResult<S, C, A, U>);
+      const unsubscribeFn = onCreate(derivedProxy as FactoryResult<S, C, A, U>);
+
+      if (unsubscribeFn) {
+        // Add the unsubscribe function returned by onCreate to the rest of the
+        // unsubscribe functions. They will be called when `state.$unsubscribe()` is called.
+        unsubscriptions.push(unsubscribeFn);
+      }
 
       return derivedProxy as FactoryResult<S, C, A, U>;
     },
