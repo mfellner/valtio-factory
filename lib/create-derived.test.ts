@@ -1,6 +1,17 @@
 import { proxy, snapshot, subscribe } from 'valtio';
 import { combineDerivedProps, createDerived, DerivedProps } from './create-derived';
 
+test('createDerived should create object with derived properties', () => {
+  const p = proxy({ x: 1 });
+
+  const derived = createDerived(p, {
+    y: (state) => (state.x * 2).toFixed(),
+  });
+
+  expect(derived.x).toEqual(1);
+  expect(derived.y).toEqual('2');
+});
+
 test('createDerived', () => {
   const p = proxy({ x: 1 });
 
@@ -9,6 +20,10 @@ test('createDerived', () => {
   });
 
   derived.x = 2;
+
+  expect(p.x).toBe(2);
+  expect(derived.x).toBe(2);
+  expect(derived.y).toBe('2'); // derived properties only update in subscriptions
 
   subscribe(
     derived,
@@ -20,7 +35,7 @@ test('createDerived', () => {
     /*notifyInSync*/ true,
   );
 
-  expect.assertions(2);
+  expect.assertions(5);
 });
 
 test('combineDerivedProps', () => {

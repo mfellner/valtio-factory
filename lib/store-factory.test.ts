@@ -1,3 +1,4 @@
+import { snapshot, subscribe } from 'valtio';
 import { subscribeKey } from 'valtio/utils';
 import { createFactory, Store } from './store-factory';
 
@@ -268,6 +269,46 @@ describe('store-factory', () => {
 
     state.baz.uppercase();
     expect(state.baz.y).toBe('WORLD');
+  });
+
+  test('composed factories with derived properties ', () => {
+    const foo = createFactory({ x: 1 }).actions({
+      inc() {
+        this.x += 1;
+      },
+    });
+
+    const bar = createFactory({ y: 1 })
+      .derived({
+        y2(state) {
+          return state.y * 2;
+        },
+      })
+      .actions({
+        inc() {
+          this.y += 1;
+        },
+      });
+
+    const state = createFactory({
+      foo,
+      bar,
+    }).create();
+
+    state.bar.inc();
+
+    subscribe(
+      state,
+      () => {
+        const snap = snapshot(state);
+
+        expect(snap.bar.y).toEqual(2);
+        expect(snap.bar.y2).toEqual(4);
+      },
+      /* notifyInSync */ true,
+    );
+
+    expect.assertions(2);
   });
 
   test('access parent store', () => {
