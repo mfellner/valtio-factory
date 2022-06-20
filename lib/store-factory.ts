@@ -133,7 +133,7 @@ export interface Factory<S extends {}, C extends {}, A extends Actions<S & U, C>
    * @see https://github.com/pmndrs/valtio#use-it-vanilla
    */
   subscribeSnapshot(
-    subscription: SubscriptionFn<Snapshot<S>, C>,
+    subscription: SubscriptionFn<UnwrappedSnapshot<S & WithContext<C>>, C>,
     ...args: AdditionalSubscribeArgs
   ): Factory<S, C, A, U>;
 
@@ -172,14 +172,32 @@ type StateFromFactory<F extends Factory<any, any, any, any>> = F extends Factory
   any,
   any
 >
-  ? S
-  : never;
+  ? S extends { [key: string]: object }
+    ? {
+        [K in keyof S]: InitialStateFromFactory<S[K]>;
+      }
+    : S
+  : never; // there's already a contraint that requires F to be a factory so this case can never happen
 
 type InitialStateFromFactory<T> = T extends Factory<any, any, any, any>
   ? Partial<StateFromFactory<T>>
   : T;
 
 type ResultFromFactory<T> = T extends Factory<any, any, any, any> ? ReturnType<T['create']> : T;
+
+/** Unwraps a snpashot from a factory. */
+type UnwrappedFactory<T extends object> = T extends Factory<infer S, infer C, any, any>
+  ? UnwrappedSnapshot<S & WithContext<C>>
+  : T extends Factory<infer S2, any, any, any>
+  ? UnwrappedSnapshot<S2 & WithContext<any>>
+  : Snapshot<T>;
+
+/** Necessary to unwrap a snapshot from nested factories. */
+type UnwrappedSnapshot<T extends object> = T extends { [key: string]: object }
+  ? Snapshot<{
+      [K in keyof T]: UnwrappedFactory<T[K]>;
+    }>
+  : Snapshot<T>;
 
 /**
  * Get the type of the store returned by a factory's `create` method.
@@ -238,7 +256,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
     },
 
     subscribeSnapshot: (
-      subscription: SubscriptionFn<Snapshot<S>, C>,
+      subscription: SubscriptionFn<UnwrappedSnapshot<S & WithContext<C>>, C>,
       ...args: AdditionalSubscribeArgs
     ) => {
       return factory<S, C, A, U>({
@@ -247,7 +265,11 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         baseDerivedProps,
         baseSubscriptions: [
           ...baseSubscriptions,
-          [(state, ...restArgs) => subscription(snapshot(state), ...restArgs), ...args],
+          [
+            (state, ...restArgs) =>
+              subscription(snapshot(state) as UnwrappedSnapshot<S & WithContext<C>>, ...restArgs),
+            ...args,
+          ],
         ],
         unsubscriptions,
         onCreate,

@@ -217,17 +217,8 @@ describe('store-factory', () => {
 
   test('compose factories', () => {
     const context = {
-      fizz: true,
       buzz: 'yes',
     };
-
-    const foo = createFactory<{ i: number }, typeof context>({ i: 42 }).actions({
-      inc() {
-        if (this.$context.fizz) {
-          this.i += 1;
-        }
-      },
-    });
 
     const bar = createFactory<{ x: number }, typeof context>({ x: 0 }).actions({
       dec() {
@@ -237,35 +228,59 @@ describe('store-factory', () => {
       },
     });
 
+    const foo = createFactory<{ bar: typeof bar }>({ bar });
+
     const baz = createFactory<{ y: string }, typeof context>({ y: 'hello' }).actions({
       uppercase() {
         this.y = this.y.toUpperCase();
       },
     });
 
-    const root = createFactory<
-      { foo: typeof foo; bar: typeof bar; baz: typeof baz },
-      typeof context
-    >({
+    const root = createFactory<{ foo: typeof foo; baz: typeof baz }, typeof context>({
       foo,
-      bar,
       baz,
+    }).subscribeSnapshot((snap, context) => {
+      // assertions to typcheck that snap is an unwrapped, plain object that also includes context properties
+      const $context: typeof context = snap.$context;
+      const $unsubscribe: Function = snap.$unsubscribe;
+
+      const buzz: string = context.buzz;
+      const y: string = snap.baz.y;
+      const foo: { bar: { x: number } } = snap.foo;
+      const x: number = snap.foo.bar.x;
+
+      const $context1: typeof context = snap.foo.bar.$context;
+      const $getParent1: Function | undefined = snap.foo.bar.$getParent;
+      const $unsubscribe1: Function = snap.foo.bar.$unsubscribe;
+
+      expect(buzz).toBeDefined();
+      expect(y).toBeDefined();
+      expect(x).toBeDefined();
+      expect(foo).toBeDefined();
+
+      expect($context).toBeDefined();
+      expect($context).toEqual(context);
+      expect($unsubscribe).toBeDefined();
+
+      expect($context1).toBeDefined();
+      expect($context1).toEqual(context);
+      expect($getParent1).toBeDefined();
+      expect($unsubscribe1).toBeDefined();
     });
 
     const state = root.create(context, {
-      bar: {
-        x: 1,
+      foo: {
+        bar: {
+          x: 43,
+        },
       },
       baz: {
         y: 'world',
       },
     });
 
-    state.foo.inc();
-    expect(state.foo.i).toBe(43);
-
-    state.bar.dec();
-    expect(state.bar.x).toBe(0);
+    state.foo.bar.dec();
+    expect(state.foo.bar.x).toBe(42);
 
     state.baz.uppercase();
     expect(state.baz.y).toBe('WORLD');
