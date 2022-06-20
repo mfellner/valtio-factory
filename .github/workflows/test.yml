@@ -16,13 +16,16 @@ jobs:
           node-version: '16'
           cache: yarn
       - run: yarn install --frozen-lockfile --check-files
-      - run: yarn build
+      - run: yarn clean
 
       - name: Typecheck
         run: yarn typecheck
 
       - name: Test
         run: yarn test --ci --coverage --runInBand
+
+      - name: Build
+        run: yarn build
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2

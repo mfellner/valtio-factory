@@ -30,6 +30,7 @@
   "scripts": {
     "start": "parcel --dist-dir build example/index.html",
     "build": "parcel build",
+    "clean": "rm -rf dist/ .parcel-cache/",
     "test": "jest",
     "typecheck": "yarn tsc -p tsconfig.json --noEmit",
     "release": "release-it",
