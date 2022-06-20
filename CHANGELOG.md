@@ -1,3 +1,12 @@
+
+
+## [1.0.0-alpha.6](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.5...1.0.0-alpha.6) (2022-06-20)
+
+
+### Bug Fixes
+
+* types for nested factories and snapshots ([b8482de](https://github.com/mfellner/valtio-factory/commit/b8482de2d7c84058cc2f0085719818f3d36f4634))
+
 ## [1.0.0-alpha.5](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.4...1.0.0-alpha.5) (2022-01-30)
 
 
@@ -34,4 +43,3 @@
 ### Bug Fixes
 
 * wrap getParent() in ref ([a6bd9f5](https://github.com/mfellner/valtio-factory/commit/a6bd9f5af0cd0674a1a8f2ad71d3b0ba079982bd))
-
