@@ -41,7 +41,7 @@ describe('store-factory', () => {
     expect(state.doubled).toBe(2);
   });
 
-  test('action', () => {
+  test('simple action', () => {
     const state = createFactory({ count: 1 })
       .actions({
         increment() {
@@ -53,6 +53,21 @@ describe('store-factory', () => {
     state.increment();
     state.increment();
     expect(state.count).toBe(3);
+  });
+
+  test('action with return type', () => {
+    const state = createFactory({ count: 1 })
+      .actions({
+        doubleAndReturn(): number {
+          this.count *= 2;
+          return this.count;
+        },
+      })
+      .create();
+
+    const value: number = state.doubleAndReturn();
+    expect(value).toBe(2);
+    expect(state.count).toBe(2);
   });
 
   test('action based on derived property', () => {

@@ -2,7 +2,7 @@ import { WithContext } from './types';
 
 export type Actions<State extends {}, Context extends {}> = Record<
   string,
-  (this: State & WithContext<Context>, ...args: any[]) => void | Promise<void>
+  (this: State & WithContext<Context>, ...args: any[]) => any | Promise<any>
 >;
 
 /**
