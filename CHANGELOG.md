@@ -1,5 +1,13 @@
 
 
+## [1.0.0-alpha.7](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.6...1.0.0-alpha.7) (2022-06-30)
+
+
+### Bug Fixes
+
+* prevent excessive type recursion in output ([5d60dae](https://github.com/mfellner/valtio-factory/commit/5d60dae7a331c472f2c70935367e67d1c0138a72))
+* support return type for actions ([9423271](https://github.com/mfellner/valtio-factory/commit/9423271112d284474c32fc62c90fbd6e4371f4e7))
+
 ## [1.0.0-alpha.6](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.5...1.0.0-alpha.6) (2022-06-20)
 
 
