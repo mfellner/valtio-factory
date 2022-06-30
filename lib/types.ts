@@ -1,4 +1,4 @@
-import { snapshot } from 'valtio';
+// import { snapshot } from 'valtio';
 
 export type UnsubscribeFn = () => void;
 
@@ -27,12 +27,35 @@ export type ParametersAfterSecond<F> = F extends (arg0: any, arg1: any, ...rest:
   ? R
   : never;
 
-/**
- * Helper type to extract the generic return type of {@link snapshot}.
- * @see https://stackoverflow.com/a/64919133
- */
-class Wrapper<T extends object> {
-  snapshot = (proxy: T) => snapshot<T>(proxy);
-}
+// /**
+//  * Helper type to extract the generic return type of {@link snapshot}.
+//  * @see https://stackoverflow.com/a/64919133
+//  */
+// class Wrapper<T extends object> {
+//   snapshot = (proxy: T) => snapshot<T>(proxy);
+// }
 
-export type Snapshot<T extends object> = ReturnType<Wrapper<T>['snapshot']>;
+// export type Snapshot<T extends object> = ReturnType<Wrapper<T>['snapshot']>;
+
+/**
+ * Valtio does not export the `Snapshot` type and the above hack is causing
+ * Typescript/Parcel to generate excessive type outputs that break the TS compiler.
+ * As a workaround, the `Snapshot` type and its dependencies are manually redeclared
+ * below.
+ */
+
+type AsRef = {
+  $$valtioRef: true;
+};
+
+type AnyFunction = (...args: any[]) => any;
+
+export type Snapshot<T> = T extends AnyFunction
+  ? T
+  : T extends AsRef
+  ? T
+  : T extends Promise<infer V>
+  ? Snapshot<V>
+  : {
+      readonly [K in keyof T]: Snapshot<T[K]>;
+    };
