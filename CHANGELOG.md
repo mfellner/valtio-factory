@@ -1,5 +1,12 @@
 
 
+## [1.0.0-alpha.8](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.7...1.0.0-alpha.8) (2022-07-13)
+
+
+### Features
+
+* actions can call other actions ([05cb762](https://github.com/mfellner/valtio-factory/commit/05cb762f7ac028c11f7a6fd93d033b3713e0e6a9))
+
 ## [1.0.0-alpha.7](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.6...1.0.0-alpha.7) (2022-06-30)
 
 
