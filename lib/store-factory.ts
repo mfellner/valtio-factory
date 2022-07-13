@@ -78,7 +78,7 @@ export interface Factory<S extends {}, C extends {}, A extends Actions<S & U, C>
    *  });
    * ```
    */
-  actions<A2 extends Actions<S & U, C>>(actions2: A2): Factory<S, C, A & A2, U>;
+  actions<A2 extends Actions<S & U, C, A>>(actions2: A2): Factory<S, C, A & A2, U>;
 
   /**
    * Declare derived properties with the {@link derive} utility.
@@ -222,7 +222,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
   return {
     [isFactoryProp]: true,
 
-    actions: <A2 extends Actions<S & U, C>>(actions: A2) => {
+    actions: <A2 extends Actions<S & U, C, A>>(actions: A2) => {
       return factory<S, C, A & A2, U>({
         baseState,
         baseActions: composeActions<S & U, C, A, A2>(baseActions, actions),

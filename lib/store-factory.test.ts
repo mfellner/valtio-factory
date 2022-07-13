@@ -70,6 +70,25 @@ describe('store-factory', () => {
     expect(state.count).toBe(2);
   });
 
+  test('action calling other action', () => {
+    const state = createFactory({ count: 0 })
+      .actions({
+        increment(n: number) {
+          this.count += n;
+        },
+      })
+      .actions({
+        double() {
+          this.increment(this.count);
+        },
+      })
+      .create();
+
+    state.increment(1);
+    state.double();
+    expect(state.count).toBe(2);
+  });
+
   test('action based on derived property', () => {
     const state = createFactory({ count: 1 })
       .derived({

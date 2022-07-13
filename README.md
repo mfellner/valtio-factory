@@ -10,6 +10,8 @@
   - [Motivation](#motivation)
 - [Define actions](#define-actions)
   - [Use context](#use-context)
+  - [Actions with return types](#actions-with-return-types)
+  - [Actions calling other actions](#actions-calling-other-actions)
 - [Derive properties](#derive-properties)
 - [Provide initial state on initialization](#provide-initial-state-on-initialization)
 - [Subscribe](#subscribe)
@@ -95,6 +97,43 @@ const state = createFactory<State, Context>({ count: 0 })
     },
   })
   .create({ shouldIncrement: true });
+```
+
+#### Actions with return types
+
+Actions may also return a value to the caller:
+
+```ts
+const state = createFactory({ count: 0 })
+  .actions({
+    increment(): number {
+      this.count += 1;
+      return this.count;
+    },
+  })
+  .create();
+
+const n: number = state.increment();
+```
+
+#### Actions calling other actions
+
+Actions can call previously defined actions.
+Note that it's necessary to call the `actions` factory function twice and only the the second action can call the first action, not the other way around.
+
+```ts
+const state = createFactory({ count: 0 })
+  .actions({
+    increment(n: number) {
+      this.count += n;
+    },
+  })
+  .actions({
+    double() {
+      this.increment(this.count);
+    },
+  })
+  .create();
 ```
 
 ### Derive properties
