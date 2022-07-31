@@ -1,5 +1,12 @@
 
 
+## [1.0.0-alpha.9](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.8...1.0.0-alpha.9) (2022-07-31)
+
+
+### Bug Fixes
+
+* allow chaining of onCreate, closes [#1](https://github.com/mfellner/valtio-factory/issues/1) ([f9b1acc](https://github.com/mfellner/valtio-factory/commit/f9b1accd833766e980308c443cca88647dfcb32f))
+
 ## [1.0.0-alpha.8](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.7...1.0.0-alpha.8) (2022-07-13)
 
 

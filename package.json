@@ -1,6 +1,6 @@
 {
   "name": "@mfellner/valtio-factory",
-  "version": "1.0.0-alpha.8",
+  "version": "1.0.0-alpha.9",
   "description": "Create and compose valtio state using the factory pattern.",
   "author": "Maximilian Fellner <mail@mfellner.eu>",
   "repository": "https://github.com/mfellner/valtio-factory",
