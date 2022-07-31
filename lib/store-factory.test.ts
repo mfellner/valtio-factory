@@ -183,7 +183,7 @@ describe('store-factory', () => {
     expect(context.fn).toHaveBeenCalledTimes(2);
   });
 
-  test('onCreate', () => {
+  test('onCreate passes the proxy state object', () => {
     let count = 0;
 
     const state = createFactory({ count: 0 })
@@ -206,6 +206,27 @@ describe('store-factory', () => {
 
     state.increment();
     expect(count).toBe(1);
+  });
+
+  test('onCreate can be chained and unsubscriptions will be called', () => {
+    const unsub1 = jest.fn();
+    const unsub2 = jest.fn();
+
+    const fn1 = jest.fn(() => unsub1);
+    const fn2 = jest.fn(() => unsub2);
+
+    const state = createFactory({ count: 0 })
+      .onCreate(() => fn1())
+      .onCreate(() => fn2())
+      .create();
+
+    expect(fn1).toHaveBeenCalledTimes(1);
+    expect(fn2).toHaveBeenCalledTimes(1);
+
+    state.$unsubscribe();
+
+    expect(unsub1).toHaveBeenCalledTimes(1);
+    expect(unsub2).toHaveBeenCalledTimes(1);
   });
 
   test('$unsubscribe unsubscribes all subscriptions', () => {

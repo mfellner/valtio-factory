@@ -36,7 +36,7 @@ export function createFactory<State extends {}, Context = void>(
     baseDerivedProps: {},
     baseSubscriptions: [],
     unsubscriptions: [],
-    onCreate: () => undefined,
+    onCreateFns: [],
   });
 }
 
@@ -210,14 +210,14 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
   baseDerivedProps,
   baseSubscriptions,
   unsubscriptions,
-  onCreate,
+  onCreateFns,
 }: {
   baseState: S;
   baseActions: A;
   baseDerivedProps: DerivedProps<S, U>;
   baseSubscriptions: Subscription<S, C>[];
   unsubscriptions: Array<() => void>;
-  onCreate: OnCreateFn<S, C, A, U>;
+  onCreateFns: OnCreateFn<S, C, A, U>[];
 }): Factory<S, C, A, U> {
   return {
     [isFactoryProp]: true,
@@ -229,7 +229,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         baseDerivedProps,
         baseSubscriptions,
         unsubscriptions,
-        onCreate,
+        onCreateFns,
       });
     },
 
@@ -240,7 +240,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         baseDerivedProps: combineDerivedProps(baseDerivedProps, derivedProps),
         baseSubscriptions,
         unsubscriptions,
-        onCreate,
+        onCreateFns,
       });
     },
 
@@ -251,7 +251,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         baseDerivedProps,
         baseSubscriptions: [...baseSubscriptions, [subscription, ...args]],
         unsubscriptions,
-        onCreate,
+        onCreateFns,
       });
     },
 
@@ -272,7 +272,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
           ],
         ],
         unsubscriptions,
-        onCreate,
+        onCreateFns,
       });
     },
 
@@ -283,7 +283,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         baseDerivedProps,
         baseSubscriptions,
         unsubscriptions,
-        onCreate: fn,
+        onCreateFns: [...onCreateFns, fn],
       });
     },
 
@@ -341,13 +341,13 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         unsubscriptions.push(unsubscription);
       }
 
-      const unsubscribeFn = onCreate(derivedProxy as FactoryResult<S, C, A, U>);
+      const unsubscribeFns = onCreateFns
+        .map((fn) => fn(derivedProxy as FactoryResult<S, C, A, U>))
+        .filter((fn): fn is UnsubscribeFn => Boolean(fn));
 
-      if (unsubscribeFn) {
-        // Add the unsubscribe function returned by onCreate to the rest of the
-        // unsubscribe functions. They will be called when `state.$unsubscribe()` is called.
-        unsubscriptions.push(unsubscribeFn);
-      }
+      // Add the unsubscribe functions returned by onCreate functions to the rest of the
+      // unsubscribe functions. They will be called when `state.$unsubscribe()` is called.
+      unsubscriptions.push(...unsubscribeFns);
 
       return derivedProxy as FactoryResult<S, C, A, U>;
     },
