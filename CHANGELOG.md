@@ -1,5 +1,7 @@
 
 
+## [1.0.0](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.9...1.0.0) (2022-07-31)
+
 ## [1.0.0-alpha.9](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.8...1.0.0-alpha.9) (2022-07-31)
 
 
