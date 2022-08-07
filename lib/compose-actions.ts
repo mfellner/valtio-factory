@@ -1,4 +1,12 @@
+import type { Factory } from './store-factory';
 import { WithContext } from './types';
+
+type ResultFromFactory<T> = T extends Factory<any, any, any, any> ? ReturnType<T['create']> : T;
+
+type FactoryResult<S extends {}, C extends {}, A extends Actions<S, C>> = {
+  [key in keyof S]: ResultFromFactory<S[key]>;
+} & A &
+  WithContext<C>;
 
 export type Actions<
   State extends {},
@@ -6,7 +14,7 @@ export type Actions<
   Actions_ extends Actions<State, Context> = {},
 > = Record<
   string,
-  (this: State & WithContext<Context> & Actions_, ...args: any[]) => any | Promise<any>
+  (this: FactoryResult<State, Context, Actions_>, ...args: any[]) => any | Promise<any>
 >;
 
 /**

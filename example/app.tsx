@@ -17,6 +17,7 @@ function User() {
           user.setUser({ name });
         }}
       />
+      {state.user?.name && <p data-testid="user-label">Hello, {state.user.name}!</p>}
     </div>
   );
 }
@@ -25,17 +26,23 @@ function Counter() {
   const { counter } = useStore();
   const state = useSnapshot(counter);
   const onInc = () => counter.inc();
-  const onReset = () => {
-    counter.reset();
-  };
 
   return (
     <div>
       <p data-testid="count">{state.currentCountMessage}</p>
       <button onClick={onInc}>increment</button>
-      <button onClick={onReset}>reset</button>
     </div>
   );
+}
+
+function Resetter() {
+  const rootStore = useStore();
+
+  const onReset = () => {
+    rootStore.reset();
+  };
+
+  return <button onClick={onReset}>reset</button>;
 }
 
 export default function App() {
@@ -43,6 +50,7 @@ export default function App() {
     <div>
       <User />
       <Counter />
+      <Resetter />
     </div>
   );
 }

@@ -13,6 +13,9 @@ type UserState = {
 };
 
 const user = createFactory<UserState, Context>({}).actions({
+  reset() {
+    this.user = undefined;
+  },
   setUser(user: User) {
     this.user = user;
   },
@@ -51,6 +54,11 @@ type RootState = {
 export const root = createFactory<RootState, Context>({
   user,
   counter,
+}).actions({
+  reset() {
+    this.counter.reset();
+    this.user.reset();
+  },
 });
 
 export type RootStore = Store<typeof root>;

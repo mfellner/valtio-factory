@@ -410,7 +410,7 @@ describe('store-factory', () => {
     expect.assertions(2);
   });
 
-  test('access parent store', () => {
+  test('access parent store of composed factories', () => {
     const foo = createFactory({ i: 0 }).actions({
       inc() {
         this.i += 1;
@@ -444,5 +444,42 @@ describe('store-factory', () => {
 
     state.bar.dec();
     expect(state.bar.x).toBe(8);
+  });
+
+  test('root factory actions of composed factories can access child states', () => {
+    const foo = createFactory({ x: 0 }).actions({
+      inc() {
+        this.x += 1;
+      },
+    });
+
+    const bar = createFactory({ y: 10 }).actions({
+      dec() {
+        this.y -= 1;
+      },
+    });
+
+    type FooFactory = typeof foo;
+    type BarFactory = typeof bar;
+    type RootState = {
+      foo: FooFactory;
+      bar: BarFactory;
+    };
+
+    const state = createFactory<RootState>({
+      foo,
+      bar,
+    })
+      .actions({
+        test() {
+          this.foo.inc();
+          this.bar.dec();
+        },
+      })
+      .create();
+
+    state.test();
+    expect(state.foo.x).toEqual(1);
+    expect(state.bar.y).toEqual(9);
   });
 });

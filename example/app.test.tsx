@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import '@testing-library/jest-dom/extend-expect';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import App from './app';
 import { root } from './model';
@@ -34,16 +34,15 @@ describe('App', () => {
   test('input text', async () => {
     const rootStore = root.create({ getRandomNumber }, { counter: { count: 0 } });
 
-    render(
+    const { findByTestId } = render(
       <StoreProvider rootStore={rootStore}>
         <App />
       </StoreProvider>,
     );
 
-    fireEvent.change(screen.getByLabelText('user-input'), { target: { value: 'Hello' } });
+    fireEvent.change(screen.getByLabelText('user-input'), { target: { value: 'Test' } });
 
-    await waitFor(() => {
-      expect(rootStore.user.user?.name).toBe('Hello');
-    });
+    expect(await findByTestId('user-label')).toHaveTextContent('Test');
+    expect(rootStore.user.user?.name).toBe('Test');
   });
 });
