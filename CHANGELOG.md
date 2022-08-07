@@ -1,5 +1,13 @@
 
 
+## [1.0.1](https://github.com/mfellner/valtio-factory/compare/1.0.0...1.0.1) (2022-08-07)
+
+
+### Bug Fixes
+
+* derived property handler receives extra attrs ([5017396](https://github.com/mfellner/valtio-factory/commit/5017396b8c72b3d54a494c29cf62003a18e9abe0))
+* root factory can access child states ([fc983d1](https://github.com/mfellner/valtio-factory/commit/fc983d1b962e1338c191e2dcbd1ce6ad3071c5f7))
+
 ## [1.0.0](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.9...1.0.0) (2022-07-31)
 
 ## [1.0.0-alpha.9](https://github.com/mfellner/valtio-factory/compare/1.0.0-alpha.8...1.0.0-alpha.9) (2022-07-31)
