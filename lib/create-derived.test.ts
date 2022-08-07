@@ -39,12 +39,12 @@ test('createDerived', () => {
 });
 
 test('combineDerivedProps', () => {
-  const state = { x: 1 } as const;
+  const state = { x: 1, $context: {}, $unsubscribe: () => undefined } as const;
 
-  const d1: DerivedProps<typeof state, { y: string }> = {
+  const d1: DerivedProps<typeof state, {}, {}, { y: string }> = {
     y: (s) => (s.x * 2).toFixed(),
   };
-  const d2: DerivedProps<typeof state, { z: boolean }> = {
+  const d2: DerivedProps<typeof state, {}, {}, { z: boolean }> = {
     z: (s) => s.x % 2 === 0,
   };
 

@@ -62,6 +62,12 @@ function isFactory(obj: any): obj is Factory<any, any, any, any> {
   return obj instanceof Object && obj[isFactoryProp] === true;
 }
 
+/**
+ * @typeParam S - State
+ * @typeParam C - Context
+ * @typeParam A - Actions
+ * @typeParam U - Derived properties
+ */
 export interface Factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U extends {}> {
   [isFactoryProp]: true;
   /**
@@ -95,7 +101,7 @@ export interface Factory<S extends {}, C extends {}, A extends Actions<S & U, C>
    * ```
    * @see https://github.com/pmndrs/valtio#derive-util
    */
-  derived<U2 extends {}>(derivedProps2: DerivedProps<S, U2>): Factory<S, C, A, U & U2>;
+  derived<U2 extends {}>(derivedProps2: DerivedProps<S, C, A, U2>): Factory<S, C, A, U & U2>;
 
   /**
    * Subscribe to the full state object.
@@ -214,7 +220,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
 }: {
   baseState: S;
   baseActions: A;
-  baseDerivedProps: DerivedProps<S, U>;
+  baseDerivedProps: DerivedProps<S, C, A, U>;
   baseSubscriptions: Subscription<S, C>[];
   unsubscriptions: Array<() => void>;
   onCreateFns: OnCreateFn<S, C, A, U>[];
@@ -233,7 +239,7 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
       });
     },
 
-    derived: <U2 extends {}>(derivedProps: DerivedProps<S, U2>) => {
+    derived: <U2 extends {}>(derivedProps: DerivedProps<S, C, A, U2>) => {
       return factory<S, C, A, U & U2>({
         baseState,
         baseActions,
@@ -303,7 +309,12 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
 
       const mergedState = { ...baseState, ...initialState };
 
-      const $getParent = ref(() => derivedProxy);
+      // Since the final `derivedProxy` will only be initialized further down below, this
+      // container is used to hold the value for the $getParent handler that must already
+      // be added to the intermediate state object at this earlier point.
+      // Prevents `ReferenceError: Cannot access 'derivedProxy' before initialization`
+      const parentContainer: { $parent?: typeof derivedProxy } = {};
+      const $getParent = ref(() => parentContainer.$parent);
 
       // Resolve any state properties that are actually other factories.
       for (const [key, value] of Object.entries(baseState)) {
@@ -328,7 +339,9 @@ function factory<S extends {}, C extends {}, A extends Actions<S & U, C>, U exte
         $unsubscribe,
       });
 
+      // `derivedProxy` is the fully formed proxy state object.
       const derivedProxy: S & A & U & WithContext<C> = createDerived(stateProxy, baseDerivedProps);
+      parentContainer.$parent = derivedProxy;
 
       for (const [subscribtion, ...args] of baseSubscriptions) {
         const unsubscription = subscribe(

@@ -1,7 +1,8 @@
 import { derive } from 'valtio/utils';
+import { WithContext } from './types';
 
-export type DerivedProps<State extends {}, U extends {}> = {
-  [K in keyof U]: (state: State) => U[K];
+export type DerivedProps<State extends {}, Context extends {}, Actions extends {}, U extends {}> = {
+  [K in keyof U]: (state: State & WithContext<Context> & Actions) => U[K];
 };
 
 type DeriveGet<T extends {}> = (proxyObject: T) => T;
@@ -15,7 +16,7 @@ type DerivedFns<State extends {}, U extends {}> = {
  */
 export function createDerived<State extends {}, U extends {}>(
   state: State,
-  derivedProps: DerivedProps<State, U>,
+  derivedProps: DerivedProps<State, any, any, U>,
 ) {
   const obj: Partial<DerivedFns<State, U>> = {};
   for (const key of Object.keys(derivedProps)) {
@@ -33,9 +34,12 @@ export function createDerived<State extends {}, U extends {}>(
  * @param d2 Second derived properties object.
  * @returns Merged object.
  */
-export function combineDerivedProps<U1 extends {}, U2 extends {}, State extends {}>(
-  d1: DerivedProps<State, U1>,
-  d2: DerivedProps<State, U2>,
-): DerivedProps<State, U1 & U2> {
-  return { ...d1, ...d2 } as DerivedProps<State, U1 & U2>;
+export function combineDerivedProps<
+  U1 extends {},
+  U2 extends {},
+  S extends {},
+  C extends {},
+  A extends {},
+>(d1: DerivedProps<S, C, A, U1>, d2: DerivedProps<S, C, A, U2>): DerivedProps<S, C, A, U1 & U2> {
+  return { ...d1, ...d2 } as DerivedProps<S, C, A, U1 & U2>;
 }

@@ -1,6 +1,7 @@
 import { snapshot, subscribe } from 'valtio';
 import { subscribeKey } from 'valtio/utils';
 import { createFactory, Store } from './store-factory';
+import { UnsubscribeFn } from './types';
 
 describe('store-factory', () => {
   test('basic example without context and initialisation state', () => {
@@ -39,6 +40,34 @@ describe('store-factory', () => {
       .create(undefined, { doubled: 0 });
 
     expect(state.doubled).toBe(2);
+  });
+
+  test('derived property handlers receive state with extra attributes', () => {
+    const state = createFactory<{ count: number }, { test: string }>({ count: 1 })
+      .actions({
+        increment() {
+          this.count += 1;
+        },
+      })
+      .derived({
+        doubled(state) {
+          const context: { test: string } = state.$context;
+          const unsubscribe: UnsubscribeFn = state.$unsubscribe;
+          const count: number = state.count;
+          const increment: () => void = state.increment;
+
+          expect(context).toEqual({ test: 'test' });
+          expect(unsubscribe).toBeInstanceOf(Function);
+          expect(count).toEqual(1);
+          expect(increment).toBeInstanceOf(Function);
+
+          return state.count * 2;
+        },
+      })
+      .create({ test: 'test' });
+
+    expect(state.doubled).toBe(2);
+    expect.assertions(5);
   });
 
   test('simple action', () => {
