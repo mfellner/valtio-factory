@@ -1,3 +1,4 @@
 {
-  "markdown.extension.toc.slugifyMode": "github"
+  "markdown.extension.toc.slugifyMode": "github",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
