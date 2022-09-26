@@ -1,5 +1,13 @@
 
 
+## [1.0.2](https://github.com/mfellner/valtio-factory/compare/1.0.1...1.0.2) (2022-09-26)
+
+
+### Bug Fixes
+
+* backwards compat w/ TS 4.7 ([8bcaf31](https://github.com/mfellner/valtio-factory/commit/8bcaf31dbed1236f1027e1120a3272bbe0c21235))
+* support typescript 4.8 ([cc564e2](https://github.com/mfellner/valtio-factory/commit/cc564e276f2f6effbafb15effa13c35cf1a47892))
+
 ## [1.0.1](https://github.com/mfellner/valtio-factory/compare/1.0.0...1.0.1) (2022-08-07)
 
 
