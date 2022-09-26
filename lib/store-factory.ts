@@ -29,9 +29,11 @@ type Subscription<S extends {}, Context> = [SubscriptionFn<S, Context>, ...Addit
  */
 export function createFactory<State extends {}, Context = void>(
   initialState: State,
-  // @ts-expect-error TODO FIXME: Context should extend {} but also remain optional.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore TODO FIXME: Context should extend {} but also remain optional.
 ): Factory<State, Context, {}, {}> {
-  // @ts-expect-error TODO FIXME: Context should extend {} but also remain optional.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore TODO FIXME: Context should extend {} but also remain optional.
   return factory<State, Context, {}, {}>({
     baseState: initialState,
     baseActions: {},
