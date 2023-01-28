@@ -1,6 +1,6 @@
 # valtio-factory 🏭 <!-- omit in toc -->
 
-[![Build Status](https://img.shields.io/github/workflow/status/mfellner/valtio-factory/test?style=flat&colorA=000000&colorB=000000)](https://github.com/mfellner/valtio-factory/actions?query=workflow%3Atest)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/mfellner/valtio-factory/test.yml?style=flat&colorA=000000&colorB=000000)](https://github.com/mfellner/valtio-factory/actions?query=workflow%3Atest)
 [![Codecov](https://img.shields.io/codecov/c/github/mfellner/valtio-factory?colorA=000000&colorB=000000)](https://app.codecov.io/gh/mfellner/valtio-factory)
 [![Build Size](https://img.shields.io/bundlephobia/minzip/@mfellner/valtio-factory?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=@mfellner/valtio-factory)
 [![Version](https://img.shields.io/npm/v/@mfellner/valtio-factory?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@mfellner/valtio-factory)
